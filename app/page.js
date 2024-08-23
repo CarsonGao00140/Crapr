@@ -23,6 +23,7 @@ export default function () {
     const [showTaken, setShowTaken] = useState(false);
 
     useEffect(() => {
+        console.log(process.env.NEXT_PUBLIC_API_URL);
         setLoggedIn(checkCookie('token'));
         navigator.geolocation.getCurrentPosition(
             (position) => {
