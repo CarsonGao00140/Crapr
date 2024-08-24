@@ -21,7 +21,7 @@ export default function () {
 
         const token = params.get('token');
         if (token) {
-            document.cookie = `token=${token}; path=/;`;
+            document.cookie = `token=${token}; path=/; SameSite=None; Secure`;
             changesAlert().then(() => final());
         }
     }, []);
