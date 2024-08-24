@@ -9,7 +9,13 @@ export default function () {
 
     useEffect(() => {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap${window.location.pathname}`;
-        fetch(url, {credentials: 'include'})
+        // fetch(url, {credentials: 'include'})
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => response.json())
             .then(({ data }) => setResults(data))
             .catch(console.error);
