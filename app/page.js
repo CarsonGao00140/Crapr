@@ -54,7 +54,9 @@ export default function () {
 
     const signOut = () => {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap/mine`;
-        fetch(url, { credentials: 'include' })
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+        fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => response.json())
             .then(({ data }) => {
                 localStorage.setItem('crap', JSON.stringify(data));

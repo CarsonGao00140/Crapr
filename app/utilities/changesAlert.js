@@ -1,8 +1,9 @@
 import capitalizeFirstLetter from './capitalizeFirstLetter.js';
 
 const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap/mine`;
+const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
 
-export default () => fetch(url, { credentials: 'include' })
+export default () => fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
     .then(response => response.json()
         .then(data => response.ok ? data : Promise.reject(data.error.message))
     )

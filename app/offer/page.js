@@ -29,7 +29,8 @@ export default function UploadForm() {
         formData.append('data', JSON.stringify(data));
 
         const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap`;
-        fetch(url, { method: 'POST', body: formData, credentials: 'include' })
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        fetch(url, { method: 'POST', body: formData, headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => response.json())
             .then(() => window.location.pathname = 'mine')
             .catch(console.error);

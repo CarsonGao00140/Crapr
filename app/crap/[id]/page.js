@@ -14,9 +14,11 @@ export default function () {
         const formData = new FormData(event.target);
         const suggestion = Object.fromEntries(formData);
         const { action } = event.nativeEvent.submitter.dataset;
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}/${action}`, { 
             method: 'POST', 
-            credentials: 'include',
+            headers: { 'Authorization': `Bearer ${token}` },
             ...(action === 'suggest' && {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(suggestion)
@@ -30,9 +32,10 @@ export default function () {
     }
 
     const handleReset = () => {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}/reset`, {
             method: 'POST',
-            credentials: 'include'
+            headers: { 'Content-Type': 'application/json' },
         })
         .then(response => response.json())
         .then(({ data: { images, ...rest } }) =>
@@ -42,9 +45,10 @@ export default function () {
     };
 
     const handleDelete = () => {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}`, {
             method: 'DELETE',
-            credentials: 'include'
+            headers: { 'Content-Type': 'application/json' },
         })
         .then(() => window.location.href = '/mine')
         .catch(console.error);
@@ -58,7 +62,9 @@ export default function () {
             setData(JSON.parse((string)));
         } else {
             const url = `${process.env.NEXT_PUBLIC_API_URL}/api${window.location.pathname}`
-            fetch(url, { credentials: 'include' })
+            const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+        fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
                 .then(response => response.json())
                 .then(({ data }) => setData(data))
                 .catch(console.error);
