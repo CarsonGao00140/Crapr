@@ -7,9 +7,18 @@ import Card from '../components/Card.js';
 export default function () {
     const [results, setResults] = useState();
 
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
     useEffect(() => {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap${window.location.pathname}`;
-        fetch(url, {method: 'POST', credentials: 'include'})
+        console.log(document.cookie);
+
+        fetch(url, {credentials: 'include'})
             .then(response => response.json())
             .then(({ data }) => setResults(data))
             .catch(console.error);
