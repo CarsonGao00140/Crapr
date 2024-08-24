@@ -16,9 +16,9 @@ export default function () {
 
     useEffect(() => {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap${window.location.pathname}`;
-        console.log(document.cookie);
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
 
-        fetch(url, {credentials: 'include'})
+        fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => response.json())
             .then(({ data }) => setResults(data))
             .catch(console.error);
