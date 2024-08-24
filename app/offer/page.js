@@ -9,23 +9,6 @@ export default function UploadForm() {
     const [selectedPosition, setSelectedPosition] = useState({ lat: 45.349, lng: -75.758 });
     const [feedback, setFeedback] = useState('');
 
-    useEffect(() => {
-        if (!document.cookie.includes('token')){
-            window.location.replace('/');
-            return;
-        };
-        
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setCurrentPosition({ lat: latitude, lng: longitude });
-                setSelectedPosition({ lat: latitude, lng: longitude });
-            },
-            () => setFeedback("Couldn’t get your location.")
-        ),[]
-    }
-    );
-
     const handleMapClick = event =>
         setSelectedPosition({
             lat: event.latLng.lat(),
@@ -51,6 +34,17 @@ export default function UploadForm() {
             .then(() => window.location.pathname = 'mine')
             .catch(console.error);
     };
+
+    useEffect(() =>
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setCurrentPosition({ lat: latitude, lng: longitude });
+                setSelectedPosition({ lat: latitude, lng: longitude });
+            },
+            () => setFeedback("Couldn’t get your location.")
+        )
+    ,[]);
 
     return (
         <main>

@@ -8,26 +8,6 @@ import checkUser from '../../utilities/checkUser.js';
 export default function () {
     const [data, setData] = useState();
 
-    useEffect(() => {
-        if (!document.cookie.includes('token')){
-            window.location.replace('/');
-            return;
-        };
-
-        const { search } = window.location;
-        if (search) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-            const string = new URLSearchParams(search).get('data');
-            setData(JSON.parse((string)));
-        } else {
-            const url = `${process.env.NEXT_PUBLIC_API_URL}/api${window.location.pathname}`
-            fetch(url, { credentials: 'include' })
-                .then(response => response.json())
-                .then(({ data }) => setData(data))
-                .catch(console.error);
-        }
-    }, []);
-
     const handleSubmit = event => {
         event.preventDefault();
         
@@ -49,6 +29,18 @@ export default function () {
         .catch(console.error);
     }
 
+    const handleReset = () => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}/reset`, {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(({ data: { images, ...rest } }) =>
+            setData({ ...rest, images: data.images })
+        )
+        .catch(console.error);
+    };
+
     const handleDelete = () => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}`, {
             method: 'DELETE',
@@ -57,6 +49,21 @@ export default function () {
         .then(() => window.location.href = '/mine')
         .catch(console.error);
     }
+
+    useEffect(() => {
+        const { search } = window.location;
+        if (search) {
+            window.history.replaceState({}, '', window.location.pathname);
+            const string = new URLSearchParams(search).get('data');
+            setData(JSON.parse((string)));
+        } else {
+            const url = `${process.env.NEXT_PUBLIC_API_URL}/api${window.location.pathname}`
+            fetch(url, { credentials: 'include' })
+                .then(response => response.json())
+                .then(({ data }) => setData(data))
+                .catch(console.error);
+        }
+    }, []);
 
     return (
         <main className={styles.details}>
@@ -73,8 +80,7 @@ export default function () {
 
                                 switch (data.status) {
                                     case 'AVAILABLE':
-                                        return (!checkUser(data, ['owner']) &&
-                                            <button data-action='interested'>Interest</button>);
+                                        return (!checkUser(data, ['owner']) && <button data-action='interested'>Interest</button>);
 
                                     case 'INTERESTED':
                                         return (<>
@@ -104,8 +110,7 @@ export default function () {
                                             {checkUser(data, ['owner']) && <h2>Please confirm that it's flushed.</h2>}
                                             {checkUser(data, ['buyer']) && <h2>Awaiting owner's confirmation.</h2>}
                                             {checkUser(data, ['owner', 'buyer']) && suggestion}
-                                            {checkUser(data, ['owner']) &&
-                                                <button data-action='flush'>Confirm</button>}
+                                            {checkUser(data, ['owner']) && <button data-action='flush'>Confirm</button>}
                                         </>);
 
                                     case 'FLUSHED':
@@ -114,9 +119,8 @@ export default function () {
                                         return <h2>Invalid status.</h2>;
                                 }
                             })()}
-                                {checkUser(data, ['owner', 'buyer']) && data.status !== 'AVAILABLE' && data.status !== 'FLUSHED'&&
-                                    <button data-action='reset'>Reset</button>}
                         </form>
+                        {checkUser(data, ['owner', 'buyer']) && data.status !== 'AVAILABLE' && data.status !== 'FLUSHED' && <button onClick={handleReset}>Reset</button>}
                         {checkUser(data, ['owner']) && <button onClick={handleDelete}>Delete</button>}
                     </div>
                 </> 

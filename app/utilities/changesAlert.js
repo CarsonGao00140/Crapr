@@ -3,7 +3,9 @@ import capitalizeFirstLetter from './capitalizeFirstLetter.js';
 const url = `${process.env.NEXT_PUBLIC_API_URL}/api/crap/mine`;
 
 export default () => fetch(url, { credentials: 'include' })
-    .then(response => response.json())
+    .then(response => response.json()
+        .then(data => response.ok ? data : Promise.reject(data.error.message))
+    )
     .then(({ data }) => {
         const string = localStorage.getItem('crap');
         if (!string) return;
@@ -40,4 +42,3 @@ export default () => fetch(url, { credentials: 'include' })
 
         localStorage.removeItem('crap');
     })
-    .catch(console.error);
