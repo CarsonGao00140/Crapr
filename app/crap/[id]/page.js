@@ -35,7 +35,7 @@ export default function () {
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}/reset`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}` },
         })
         .then(response => response.json())
         .then(({ data: { images, ...rest } }) =>
@@ -48,7 +48,7 @@ export default function () {
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/crap/${data._id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}` },
         })
         .then(() => window.location.href = '/mine')
         .catch(console.error);
